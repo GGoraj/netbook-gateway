@@ -1,6 +1,5 @@
 package com.gg.dls.service.authentication.controller;
 
-
 import com.gg.dls.service.authentication.message.request.LoginForm;
 import com.gg.dls.service.authentication.message.request.SignUpForm;
 import com.gg.dls.service.authentication.message.response.JwtResponse;
@@ -10,6 +9,7 @@ import com.gg.dls.service.authentication.model.User;
 import com.gg.dls.service.authentication.repository.RoleRepository;
 import com.gg.dls.service.authentication.repository.UserRepository;
 import com.gg.dls.service.authentication.security.jwt.JwtProvider;
+import com.gg.dls.service.authentication.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +44,11 @@ public class AuthRestAPIs {
     @Autowired
     JwtProvider jwtProvider;
 
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+
+
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm loginRequest) {
 
@@ -58,12 +63,9 @@ public class AuthRestAPIs {
 
         String jwt = jwtProvider.generateJwtToken(authentication);
 
-        //by greg
-        String username = loginRequest.getUsername();
-        Long id = userRepository.findByUsername(username).get().getId();
-        System.out.println("*******************     ********************^    " + id);
 
-        return ResponseEntity.ok(new JwtResponse(jwt, id));
+
+        return ResponseEntity.ok(new JwtResponse(jwt));
     }
 
     @PostMapping("/signup")
@@ -111,4 +113,5 @@ public class AuthRestAPIs {
 
         return ResponseEntity.ok().body("user registered");
     }
+
 }
