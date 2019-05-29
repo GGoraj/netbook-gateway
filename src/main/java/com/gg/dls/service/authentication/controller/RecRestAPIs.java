@@ -1,0 +1,57 @@
+package com.gg.dls.service.authentication.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.gg.dls.service.authentication.message.response.RecommendationResponse;
+
+import io.jsonwebtoken.Jwts;
+
+@RestController
+@RequestMapping("/api/rec")
+public class RecRestAPIs {
+
+	@Value("${gg.app.jwtSecret}")
+	private String jwtSecret;
+
+	@Autowired
+	private RestTemplate restTemplate;
+
+	@Bean
+	@LoadBalanced
+	private RestTemplate getRestTemplate() {
+		return new RestTemplate();
+	}
+
+	// TODO: Make a RecommendationResponse-class that has the same fields as
+	// whatever object the Recommendation service responds with.
+	@LoadBalanced
+	@GetMapping("/")
+	public RecommendationResponse getRecommendation(@RequestHeader("Authorization") String authTokenArg) {
+		// Extract the JWT from the Authorization-header
+		String authToken = authTokenArg.substring(authTokenArg.indexOf(" ") + 1);
+		Long userId;
+
+		// Validate the JWT and extract the userId for use in the next step.
+		// (.parseclaimsJws() will throw errors in case of an invalid token.)
+		userId = (Long) Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken).getBody().get("userId");
+
+		// Forward the request to a running a running and Eureka-registered instance of
+		// the recommendation-service, using its spring.application.name for Eureka
+		// service discovery.
+		// Apart from a URL, the RestTemplate needs a class that has corresponding
+		// properties/fields as the json-object received from the recommendation service
+		// response body.
+		RecommendationResponse recResponse = restTemplate
+				.getForObject("http://recommendation-service/recommend/" + userId, RecommendationResponse.class);
+
+		return recResponse;
+	}
+}
