@@ -3,11 +3,10 @@ package com.gg.dls.service.authentication.controller;
 import com.gg.dls.service.authentication.message.response.UserResponse;
 import com.gg.dls.service.authentication.model.User;
 import com.gg.dls.service.authentication.repository.UserRepository;
+import com.gg.dls.service.authentication.security.jwt.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/user/")
 @RestController
@@ -16,9 +15,15 @@ public class UserRestAPIs {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    private JwtProvider tokenProvider;
 
-    @PostMapping("/details/{id}")
-    public UserResponse getUserDetails(@PathVariable("id") Long userId){
+
+    @PostMapping("/details")
+    public UserResponse getUserDetails(@RequestHeader("Authorization") String value){
+
+        String token = value.substring(7,value.length());
+        Long userId = Long.valueOf(tokenProvider.getUserNameFromJwtToken(token));
 
         User dbUser = userRepository.findUserById(Long.valueOf(userId))
                 .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Id found."));
