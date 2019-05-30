@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/user/")
 @RestController
 public class UserRestAPIs {
@@ -19,7 +20,7 @@ public class UserRestAPIs {
     private JwtProvider tokenProvider;
 
 
-    @PostMapping("/details")
+    @GetMapping("/details")
     public UserResponse getUserDetails(@RequestHeader("Authorization") String value){
 
         String token = value.substring(7,value.length());
