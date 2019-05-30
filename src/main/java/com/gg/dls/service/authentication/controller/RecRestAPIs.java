@@ -30,8 +30,6 @@ public class RecRestAPIs {
 		return new RestTemplate();
 	}
 
-	// TODO: Make a RecommendationResponse-class that has the same fields as
-	// whatever object the Recommendation service responds with.
 	@LoadBalanced
 	@GetMapping("/")
 	public RecommendationResponse getRecommendation(@RequestHeader("Authorization") String authTokenArg) {
@@ -46,8 +44,8 @@ public class RecRestAPIs {
 		// Forward the request to a running a running and Eureka-registered instance of
 		// the recommendation-service, using its spring.application.name for Eureka
 		// service discovery.
-		// Apart from a URL, the RestTemplate needs a class that has corresponding
-		// properties/fields as the json-object received from the recommendation service
+		// Apart from a URL, the RestTemplate needs a class that has properties/fields
+		// that correspond with the json-object received from the recommendation service
 		// response body.
 		RecommendationResponse recResponse = restTemplate
 				.getForObject("http://recommendation-service/recommend/" + userId, RecommendationResponse.class);
