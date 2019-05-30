@@ -30,8 +30,6 @@ public class RecRestAPIs {
 		return new RestTemplate();
 	}
 
-	// TODO: Make a RecommendationResponse-class that has the same fields as
-	// whatever object the Recommendation service responds with.
 	@LoadBalanced
 	@GetMapping("/")
 	public RecommendationResponse getRecommendation(@RequestHeader("Authorization") String authTokenArg) {
