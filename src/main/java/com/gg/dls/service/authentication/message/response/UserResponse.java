@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 public class UserResponse {
 
-
+    private Long id;
     private String name;
     private String username;
     private String email;
@@ -23,8 +23,13 @@ public class UserResponse {
         return email;
     }
 
-    public UserResponse(String name, String username, String email) {
+    public Long getId() {
+        return id;
+    }
 
+
+    public UserResponse(Long id, String name, String username, String email) {
+        this.id = id;
         this.name = name;
         this.username = username;
         this.email = email;
@@ -47,6 +52,7 @@ public class UserResponse {
     @Override
     public String toString() {
         return "UserResponse{" +
+                "id='" + id + '\'' +
                 "name='" + name + '\'' +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +

@@ -29,7 +29,7 @@ public class UserRestAPIs {
         User dbUser = userRepository.findUserById(Long.valueOf(userId))
                 .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Id found."));
 
-        UserResponse user = new UserResponse(dbUser.getName(), dbUser.getUsername(), dbUser.getEmail());
+        UserResponse user = new UserResponse(dbUser.getId(), dbUser.getName(), dbUser.getUsername(), dbUser.getEmail());
         return user;
     }
 
